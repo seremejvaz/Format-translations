@@ -13,32 +13,49 @@ class App extends Component {
     };
   }
   
-  keysNotToFlatten = ["bars", "formBar"];
+  keysNotToFlatten = ["button", "warning", "status", "error", "languages", "countries"];
 
   handleText = (obj) =>{
     const objParse = JSON.parse(obj);
     const result = {};
     this.update(objParse, result);
-    console.log('resultObj', result)
-    this.setState({result: result});
+    const ordered = {};
+    Object.keys(result).sort((a,b) => {
+      console.log('a', a)
+      console.log('b', b)
+      if ( a.toLowerCase() < b.toLowerCase() ) {
+      return -1;
+      } else if ( a.toLowerCase() > b.toLowerCase() ) {
+          return 1;
+      } else {
+          return 0;
+      }
+    }).forEach(key => {
+      ordered[key] = result[key];
+    });
+    console.log('order', ordered);
+    this.setState({result: ordered});
     return this.state.result;
   };
 
   update = (objText, result = {}) => {
     const keys = Object.keys(objText);
-
     const tempResultObj = keys.map(key => {
-      if(objText[key] instanceof Object){
-        if(this.keysNotToFlatten.includes(key)){
-          result[key] = objText[key]
+
+      if(!result.hasOwnProperty(key)){
+        if(objText[key] instanceof Object){
+          if(this.keysNotToFlatten.includes(key)){
+            result[key] = objText[key]
+          }else {
+            this.update(objText[key], result);
+          }
+        }else {
+          result[key] = objText[key];
         }
-        else {
-          this.update(objText[key], result);
-        }
+      }else {
+        console.log('error', key)
       }
-      else{
-        result[key] = objText[key];
-      }
+      
     })
   };
 
