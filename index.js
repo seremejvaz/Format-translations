@@ -21,8 +21,6 @@ class App extends Component {
     this.update(objParse, result);
     const ordered = {};
     Object.keys(result).sort((a,b) => {
-      console.log('a', a)
-      console.log('b', b)
       if ( a.toLowerCase() < b.toLowerCase() ) {
       return -1;
       } else if ( a.toLowerCase() > b.toLowerCase() ) {
@@ -33,7 +31,6 @@ class App extends Component {
     }).forEach(key => {
       ordered[key] = result[key];
     });
-    console.log('order', ordered);
     this.setState({result: ordered});
     return this.state.result;
   };
