@@ -13,9 +13,9 @@ class App extends Component {
     };
   }
   
-  keysNotToFlatten = ["button", "warning", "status", "error", "languages", "countries"];
+  keysNotToFlatten = ["button", "warning", "status", "error", "languages", "countries", "warningTab", "docsValidationSetup", "errors", "statusCases", "warnings", "buttons" ];
 
-  handleText = (obj) =>{
+  executeFuntion = (obj) =>{
     const objParse = JSON.parse(obj);
     const result = {};
     this.update(objParse, result);
@@ -38,45 +38,69 @@ class App extends Component {
   update = (objText, result = {}) => {
     const keys = Object.keys(objText);
     const tempResultObj = keys.map(key => {
-
-      if(!result.hasOwnProperty(key)){
-        if(objText[key] instanceof Object){
-          if(this.keysNotToFlatten.includes(key)){
+      
+      if(objText[key] instanceof Object){
+        if(this.keysNotToFlatten.includes(key)){
             result[key] = objText[key]
-          }else {
-            this.update(objText[key], result);
-          }
         }else {
-          result[key] = objText[key];
+          this.update(objText[key], result);
         }
       }else {
-        console.log('error', key)
+        if(!result.hasOwnProperty(key)){
+          result[key] = objText[key];
+        }else {
+            console.log('error', key)
+        }
       }
+      
       
     })
   };
 
+  resetFunction = () => {
+    this.setState({text: ''})
+    this.setState({result: undefined})
+  }
+
   render() {
     return (
       <div 
-      style={{display:'flex', flexDirection:'row'}}
+      style={{display:'flex', flexDirection:'row', fontFamily: 'sans-serif'}}
       >
-        <textarea
-        value={this.state.text}
-        onChange={(e)=> this.setState({text:e.target.value})}
-        style={{height:'500px', width:'250px', margin:'20px'}}
-        >
-        </textarea>
+        <div>
+          <h3
+            style={{margin:'20px 20px 0px'}}
+          >Add your JSON</h3>
+          <textarea
+            value={this.state.text}
+            onChange={(e)=> this.setState({text:e.target.value})}
+            style={{height:'500px', width:'250px', margin:'20px'}}
+          >
+          </textarea>
+        </div>
         <button
-        onClick = {() => this.handleText(this.state.text)}
-        style={{height:'50px', width:'50px', margin:'20px'}}
-        placeholder='execute'
-        />
-        <textarea 
-        style={{height:'500px', width:'250px', margin:'20px'}}
-        value={JSON.stringify(this.state.result)}
+          onClick = {() => this.executeFuntion(this.state.text)}
+          style={{height:'50px', width:'60px', margin:'20px', alignSelf: 'center'}}
         >
-        </textarea>
+          Execute
+        </button>
+        <button
+          onClick = {() => this.resetFunction(this.state.text)}
+          style={{height:'50px', width:'60px', margin:'20px', alignSelf: 'center'}}
+        >
+          Reset
+        </button>
+        <div>
+          <h3
+            style={{margin:'20px 20px 0px'}}
+          >Result</h3>
+          <textarea 
+            style={{height:'500px', width:'250px', margin:'20px'}}
+            value={JSON.stringify(this.state.result)}
+          >
+          </textarea>
+        </div>
+        
       </div>
     );
   }
